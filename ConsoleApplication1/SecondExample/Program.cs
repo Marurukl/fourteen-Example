@@ -4,28 +4,34 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
+using System.IO;
 
-namespace ConsoleApplication1
+namespace SecondExample
 {
+    
     class Program
     {
         static void Main(string[] args)
         {
-            //1.Прочитать содержимое XML файла со списком последних новостей по ссылке https://habrahabr.ru/rss/interesting/
-            //Создать класс Item со свойствами: Title, Link, Description, PubDate.
-            //Создать коллекцию типа List< Item > и записать в нее данные из файла.
-            
+            //2.На основании задания 1, сериализовать лист полученных объектов в XML и записать в файл.
+            string path = @"C:\Games\ItemXml.xml";
+
             XmlDocument document = new XmlDocument();
+
             List<Item> items = new List<Item>();
+
             document.Load("https://habrahabr.ru/rss/interesting/");
+
+            
             XmlNode node = document.DocumentElement;
+
             XmlNode channel = node["channel"];
-            int itemCount = 1;
+
             if (channel.HasChildNodes)
             {
                 foreach (XmlNode otherNode in channel.ChildNodes)
                 {
-                    if(otherNode.Name == "item")
+                    if (otherNode.Name == "item")
                     {
                         Item item = new Item();
                         item.Title = otherNode["title"].InnerText;
@@ -36,17 +42,10 @@ namespace ConsoleApplication1
                     }
                 }
             }
-            foreach (var item in items)
-            {
-                Console.WriteLine("item :  №{0} ",itemCount);
-                Console.WriteLine("Title : {0}",item.Title);
-                Console.WriteLine("Link : {0}",item.Link);
-                Console.WriteLine("Description : {0}", item.Description);
-                Console.WriteLine("PubDate : {0}", item.PubDate);
-                itemCount++;
-            }
-            Console.ReadLine();
+            document.Save(path);
+               // простите за такой подход просто пробывал создать файл , но он ругалься что файл используется в другом процессе вот и пришлось в ручную создовать
 
+            Console.ReadLine();
         }
     }
 }
